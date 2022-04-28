@@ -8,11 +8,43 @@ const CONFIG = {
   subRole: "967120105655894097",
   subController: ["966057444289687672", "966057439701110794"],
   support: {
-    channel: "967117614033825842",
-    logChannel: "966988156350103592",
-    category: "966835658666684437",
-    mods: "966057458529341440",
-    arsiv: "967117790211346502",
+    channel: "969247607090212915",
+    category: "969242672311201852",
+    mods: "966832410027257948",
+    arsiv: "969339517444173914",
+  },
+  shop: {
+    category: "969344514768642188",
+    mods: "969242759397539840",
+    channel: "969225423340839022",
+    options: [
+      {
+        label: "Discord Bot",
+        description: "Discord bot hizmeti için bir talep oluşturursunuz.",
+        value: "discord-bot",
+      },
+      {
+        label: "WhatsApp Bot",
+        description: "WhatsApp Bot hizmeti için bir talep oluşturursunuz.",
+        value: "whatsapp-bot",
+      },
+      {
+        label: "API Wrapper",
+        description: "API Wrapper hizmeti için bir talep oluşturursunuz.",
+        value: "api",
+      },
+      {
+        label: "Website",
+        description: "Website hizmeti için bir talep oluşturursunuz.",
+        value: "website",
+      },
+      {
+        label: "Discord Banner",
+        description:
+          "Discord Banner (Sunucu, Kullanıcı) hizmeti için bir talep oluşturursunuz.",
+        value: "discord-banner",
+      },
+    ],
   },
   game: {
     name: "bluudot server",

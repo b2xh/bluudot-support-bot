@@ -12,12 +12,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/b2xh/discord-register-bot.git"
+    "url": "git+https://github.com/b2xh/bluudot-support-bot.git"
   },
   "bugs": {
-    "url": "https://github.com/b2xh/discord-register-bot/issues"
+    "url": "https://github.com/b2xh/bluudot-support-bot/issues"
   },
-  "homepage": "https://github.com/b2xh/discord-register-bot#readme",
+  "homepage": "https://github.com/b2xh/bluudot-support-bot#readme",
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/bunyan": "^1.8.8",

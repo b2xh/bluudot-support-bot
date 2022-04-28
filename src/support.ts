@@ -2,24 +2,19 @@ import { createLogger } from "bunyan";
 import { ModalSubmitInteraction, showModal } from "discord-modals";
 import {
   MessageEmbed,
-  Formatters,
   TextChannel,
   Interaction,
   CacheType,
   MessageButton,
   MessageActionRow,
   Message,
+  Formatters,
 } from "discord.js";
 import { Main } from "./main";
 import { createSupportChannel } from "./utils/support/createSupportChannel";
 import { createSupportModal } from "./utils/support/createSupportModal";
 import { CONFIG } from "./utils/config";
-import storage from "easy-json-database";
-import { Permissions } from "discord.js";
-import {
-  createActiveSupportButton,
-  createAgainActiveSupportButton,
-} from "./utils/support/createSupportButtons";
+import { createActiveButton } from "./utils/createButtons";
 
 type TSupportSystem = {
   client: Main;
@@ -28,7 +23,6 @@ type TSupportSystem = {
 class SupportController {
   public client: Main;
   public logger = createLogger({ name: "SUPPORT-LOGS" });
-  public storage = new storage("./src/storage.json");
 
   public constructor({ client }: TSupportSystem) {
     this.client = client;
@@ -111,162 +105,41 @@ class SupportController {
           client: interaction.client,
           interaction: interaction,
         });
-      } else if (interaction.customId === "support-arsiv") {
-        var ticketChannel = interaction.client.channels.cache.get(
-          interaction.channel.id
-        ) as TextChannel;
-
-        var memberID = ticketChannel.name.split("-")[1];
-        await ticketChannel.edit({
-          name: `arsiv-${memberID}`,
-          parent: CONFIG.support.arsiv,
-          permissionOverwrites: [
-            {
-              id: interaction.guild.roles.everyone.id,
-              deny: [Permissions.FLAGS.VIEW_CHANNEL],
-            },
-            {
-              id: CONFIG.support.mods,
-              deny: [Permissions.FLAGS.SEND_MESSAGES],
-            },
-            {
-              id: memberID,
-              deny: [Permissions.FLAGS.VIEW_CHANNEL],
-            },
-          ],
-        });
-
-        await interaction.deferReply({ ephemeral: true });
-        interaction.followUp({
-          content: `Yardım talebi başarıyla arşivlendi!`,
-          ephemeral: true,
-        });
-
-        var filteredMessage = (
-          await interaction.channel.messages.fetch({ limit: 100 })
-        ).find((x) => x.author.id === interaction.client.user.id);
-
-        var message = interaction.channel.messages.fetch(filteredMessage.id);
-
-        const embed: MessageEmbed = new MessageEmbed()
-          .setTitle("Bu talep arşivlendi")
-          .setColor("#5865F2")
-          .setDescription(
-            `Hey! Bu talep <@${interaction.user.id}> tarafından arşivlendi!`
-          )
-          .addField(
-            "*NOT*",
-            "Talebi tekrar aktif etmek için aşağıdaki **yeşil** düğmeyi kullanabilirsiniz eğer bu kanalı kalıcı olarak kapatmak istiyorsanız **kırmızı** düğmeyi kullanabilirsiniz"
-          )
-          .setTimestamp()
-          .setFooter({ text: "Bluudot.gg support system (br1s)" });
-
-        (await message).edit({
-          embeds: [embed],
-          components: [createAgainActiveSupportButton()],
-        });
-      }
-      if (interaction.customId === "support-aktifet") {
-        var ticketChannel = interaction.client.channels.cache.get(
-          interaction.channel.id
-        ) as TextChannel;
-
-        var memberID = ticketChannel.name.split("-")[1];
-        await ticketChannel.edit({
-          name: `support-${memberID}`,
-          parent: CONFIG.support.category,
-          permissionOverwrites: [
-            {
-              id: interaction.guild.roles.everyone.id,
-              deny: [Permissions.FLAGS.VIEW_CHANNEL],
-            },
-            {
-              id: CONFIG.support.mods,
-              allow: [Permissions.FLAGS.SEND_MESSAGES],
-            },
-            {
-              id: memberID,
-              allow: [Permissions.FLAGS.VIEW_CHANNEL],
-            },
-          ],
-        });
-
-        await interaction.deferReply({ ephemeral: true });
-        interaction.followUp({
-          content: `Yardım talebi tekrardan atkif edildi!`,
-          ephemeral: true,
-        });
-
-        var filteredMessage = (
-          await interaction.channel.messages.fetch({ limit: 100 })
-        ).find((x) => x.author.id === interaction.client.user.id);
-
-        var message = interaction.channel.messages.fetch(filteredMessage.id);
-
-        const embed: MessageEmbed = new MessageEmbed()
-          .setTitle("Hey! Talep tekrardan aktif edildi")
-          .setColor("#5865F2")
-          .setDescription(
-            `Merhaba, <@${interaction.user.id}> bu talep tekrardan aktif edildi.\n\nYetkili ekibimiz birazdan senin ile ilgilenecek.`
-          )
-          .addField(
-            "*NOT*",
-            "Talebi tekrardan arşivlemek için aşağıdaki **yeşil** düğmeyi kullanabilirsiniz eğer bu kanalı kalıcı olarak kapatmak istiyorsanız **kırmızı** düğmeyi kullanabilirsiniz"
-          )
-          .setTimestamp()
-          .setFooter({ text: "Bluudot.gg support system (br1s)" });
-
-        (await message).edit({
-          embeds: [embed],
-          components: [createActiveSupportButton()],
-        });
-      }
-
-      if (interaction.customId === "support-kapat") {
-        if (!interaction.memberPermissions.has("KICK_MEMBERS")) {
-          await interaction.deferReply({ ephemeral: true });
-          interaction.followUp({
-            content: `Yeterli yetkiniz bulunmuyor.`,
-            ephemeral: true,
-          });
-          return;
-        }
-        interaction.reply({
-          content: `Bu yardım talebi **15** saniye icerisinde kalıcı olarak kaldırılacak.`,
-        });
-        setTimeout(async () => {
-          await interaction.channel.delete();
-          return;
-        }, 15000);
-
-        this.logger.info(
-          `Ticket removed; ${interaction.user.tag} - (${interaction.user.id}) [${interaction.channel.id}]`
-        );
-      }
-
-      if (interaction.customId === "rules-button") {
-        var member = interaction.guild.members.cache.get(interaction.user.id);
-        if (member.roles.cache.has("966059487238705175")) {
-          interaction.reply({
-            content: "Zaten rol sende bulunuyor.",
-            ephemeral: true,
-          });
-        } else {
-          member.roles.add("966059487238705175");
-          interaction.reply({
-            content: "Başarıyla rolü aldın!",
-            ephemeral: true,
-          });
-        }
       }
     }
   }
 
   public async handleModal(modal: ModalSubmitInteraction) {
     if (modal.customId === "support-modal") {
-      var supportReason = modal.getTextInputValue("support-modal-reason");
       var createdChannel = (await createSupportChannel(modal)) as TextChannel;
+      var ticketReason = modal.getTextInputValue("support-modal-reason");
 
+      var embed = new MessageEmbed()
+        .setTitle(`${modal.user.tag} yeni bir talep oluşturdu`)
+        .setColor("#5865F2")
+        .setDescription(
+          `Merhaba, **${modal.user.username}** talep oluşturduğun için teşekkürler. Yetkili ekibimiz birazdan senin ile ilgilenecek.`
+        )
+        .addFields([
+          {
+            name: "Talep açılma sebebi:",
+            value: Formatters.codeBlock("markdown", ticketReason),
+          },
+          {
+            name: "*NOT!*",
+            value: `Talebi tekrardan arşivlemek için aşağıdaki **yeşil** düğmeyi kullanabilirsiniz eğer bu kanalı kalıcı olarak kapatmak istiyorsanız **kırmızı** düğmeyi kullanabilirsiniz`,
+          },
+        ])
+        .setTimestamp()
+        .setFooter({
+          text: `${modal.guild.name} |`,
+        });
+
+      await createdChannel.send({
+        embeds: [embed],
+        content: `<@${modal.user.id}> - <@&${CONFIG.support.mods}>`,
+        components: [createActiveButton()],
+      });
       await modal.deferReply({ ephemeral: true });
       modal.followUp({
         content: `Hey! senin için yardım alabileceğin bir kanal oluşturdum; <#${createdChannel.id}>`,
@@ -275,53 +148,13 @@ class SupportController {
       this.logger.info(
         `New ticket created; ${modal.user.tag} - (${modal.user.id}) [${createdChannel.name}]`
       );
-
-      /* LOG CHANNEL */
-      // var logChannel = await this.client.channels.cache.get(
-      //   "966988156350103592"
-      // );
-
-      // if (logChannel.isText()) {
-      //   logChannel.send({
-      //     embeds: [
-      //       this.supportChatLog.created({
-      //         username: modal.user.username,
-      //         reason: supportReason,
-      //       }).embed,
-      //     ],
-      //   });
-      // }
-      /* LOG CHANNEL */
-
-      const embed: MessageEmbed = new MessageEmbed()
-        .setTitle(modal.user.tag + " yeni bir talep oluşturdu")
-        .setColor("#5865F2")
-        .setDescription(
-          `Merhaba, **${modal.user.username}** talep oluşturduğun için teşekkürler.\n\nYetkili ekibimiz birazdan senin ile ilgilenecek.`
-        )
-        .addField(
-          "Talep açılma sebebi:",
-          Formatters.codeBlock("markdown", supportReason)
-        )
-        .addField(
-          "*NOT*",
-          "Talebi tekrardan arşivlemek için aşağıdaki **yeşil** düğmeyi kullanabilirsiniz eğer bu kanalı kalıcı olarak kapatmak istiyorsanız **kırmızı** düğmeyi kullanabilirsiniz"
-        )
-        .setTimestamp()
-        .setFooter({ text: "Bluudot.gg support system (br1s)" });
-
-      createdChannel.send({
-        content: `<@${modal.user.id}> - <@&${CONFIG.support.mods}>`,
-        embeds: [embed],
-        components: [createActiveSupportButton()],
-      });
     }
   }
 
   sendSupportEmbed() {
     this.client.on("messageCreate", (message: Message) => {
       if (message.content === "!sendSupportEmbed") {
-        this.rulesButton();
+        // this.supportEmbed();
       }
       return;
     });

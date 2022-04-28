@@ -1,18 +1,16 @@
-import {
-  Client,
-  MessageReaction,
-  PartialMessageReaction,
-  PartialUser,
-  User,
-} from "discord.js";
+import { Client, MessageEmbed, TextChannel } from "discord.js";
 import { createLogger } from "bunyan";
 import { SupportController } from "./support";
 import { CONFIG } from "./utils/config";
+import { Shop } from "./shop";
+import { archivingTicket } from "./utils/support/archivingTicket";
+import { reActiveTicket } from "./utils/support/reActiveTicket";
 import modals from "discord-modals";
 
 class Main extends Client {
   public logger = createLogger({ name: "MAIN-LOGS" });
   public supportController: SupportController;
+  public shop: Shop;
 
   public constructor() {
     super({
@@ -27,25 +25,58 @@ class Main extends Client {
       },
     });
     this.supportController = new SupportController({ client: this });
+    this.shop = new Shop(this);
     modals(this);
   }
 
-  // public async reactionRole(
-  //   reaction: MessageReaction | PartialMessageReaction,
-  //   user: User | PartialUser
-  // ) {
-  //   if (reaction.emoji.name === "💡") {
-  //     if (reaction.message.id === "967161868378595368") {
-  //       var member = reaction.message.guild.members.cache.get(user.id);
+  public handleButtons() {
+    this.on("interactionCreate", async (i) => {
+      var channel = this.channels.cache.get(i.channel.id) as TextChannel;
+      var type = channel.name.split("-")[0];
+      var role = type === "shop" ? CONFIG.shop.mods : CONFIG.support.mods;
+      console.log(type);
 
-  //       if (member.roles.cache.has("966059487238705175")) {
-  //         await reaction.remove();
-  //       } else {
-  //         await member.roles.add("966059487238705175");
-  //       }
-  //     }
-  //   }
-  // }
+      if (i.isButton()) {
+        if (i.customId === "arsiv") {
+          await archivingTicket(i, {
+            user: i.user,
+            guild: i.guild,
+            role,
+          });
+        } else if (i.customId === "aktifet") {
+          await reActiveTicket(i, {
+            user: i.user,
+            guild: i.guild,
+            type: type,
+            role: role,
+          });
+        } else if (i.customId === "kapat") {
+          if (!i.memberPermissions.has("KICK_MEMBERS")) {
+            await i.deferReply({ ephemeral: true });
+            i.followUp({
+              content: `Yeterli yetkiniz bulunmuyor.`,
+              ephemeral: true,
+            });
+            return;
+          }
+          i.reply({
+            content: `Bu talep **5** saniye icerisinde kalıcı olarak kaldırılacak.`,
+          });
+          setTimeout(async () => {
+            await i.channel.delete();
+            return;
+          }, 5000);
+
+          this.logger.info(
+            `${type.replace(
+              type.charAt(0),
+              type.charAt(0).toUpperCase()
+            )} ticket removed; ${i.user.tag} - (${i.user.id}) [${i.channel.id}]`
+          );
+        }
+      }
+    });
+  }
 
   public async init() {
     await this.login(CONFIG.token);
@@ -73,6 +104,8 @@ class Main extends Client {
       "interactionCreate",
       this.supportController.handleButtonComponents
     );
+    await this.shop.handleShopMenu();
+    await this.handleButtons();
     await this.on("interactionCreate", async (i) => {
       if (i.isCommand()) {
         if (i.commandName === "sub") {
@@ -104,7 +137,8 @@ class Main extends Client {
         }
       }
     });
-    // await this.supportController.sendSupportEmbed();
+    await this.shop.createShopMessage();
+    await this.supportController.sendSupportEmbed();
   }
 }
 
