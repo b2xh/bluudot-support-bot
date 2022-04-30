@@ -5,6 +5,7 @@ config();
 
 const CONFIG = {
   token: process.env.TOKEN,
+  memberID: "966059487238705175",
   subRole: "967120105655894097",
   subController: "966057444289687672",
   commands: {

@@ -105,6 +105,25 @@ class SupportController {
           client: interaction.client,
           interaction: interaction,
         });
+      } else if (interaction.customId === "rules-button") {
+        var IMember = interaction.guild.members.cache.get(
+          interaction.member.user.id
+        );
+
+        if (!IMember.roles.cache.get(CONFIG.memberID)) {
+          await IMember.roles.add(CONFIG.memberID);
+          await interaction.reply({
+            content: "Başarıyla sunucuya kayıt oldun.",
+            ephemeral: true,
+          });
+          return;
+        } else {
+          await interaction.reply({
+            content: "Zaten sunucuya kayıtlısın",
+            ephemeral: true,
+          });
+          return;
+        }
       }
     }
   }

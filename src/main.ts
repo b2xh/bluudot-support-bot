@@ -1,11 +1,8 @@
 import {
   Client,
   CommandInteraction,
-  Guild,
   GuildMember,
-  MessageEmbed,
   TextChannel,
-  User,
 } from "discord.js";
 import { createLogger } from "bunyan";
 import { SupportController } from "./support";
