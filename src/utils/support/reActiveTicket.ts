@@ -42,7 +42,7 @@ async function reActiveTicket(interaction, { type, user, guild, role }) {
   const embed: MessageEmbed = new MessageEmbed()
     .setColor("#5865F2")
     .setDescription(
-      `Merhaba, <@${user.id}> bu talep tekrardan aktif edildi.\n\nYetkili ekibimiz birazdan senin ile ilgilenecek.`
+      `Merhaba, <@${user.id}> bu talep tekrardan aktif edildi. Yetkili ekibimiz birazdan senin ile ilgilenecek.`
     )
     .addField(
       "*NOT*",

@@ -6,17 +6,43 @@ config();
 const CONFIG = {
   token: process.env.TOKEN,
   subRole: "967120105655894097",
-  subController: ["966057444289687672", "966057439701110794"],
+  subController: "966057444289687672",
+  commands: {
+    roles: {
+      developer: "969589188532006912",
+      designer: "969589184757117009",
+      editor: "969589182299275284",
+      customer: "966057477860904970",
+    },
+    choices: [
+      {
+        name: "Developer",
+        value: "developer",
+      },
+      {
+        name: "Designer",
+        value: "designer",
+      },
+      {
+        name: "Editor",
+        value: "editor",
+      },
+      {
+        name: "Customer",
+        value: "customer",
+      },
+    ],
+  },
   support: {
-    channel: "969247607090212915",
-    category: "969242672311201852",
-    mods: "966832410027257948",
-    arsiv: "969339517444173914",
+    channel: "967117614033825842",
+    category: "966835658666684437",
+    mods: "966057458529341440",
+    arsiv: "967117790211346502",
   },
   shop: {
-    category: "969344514768642188",
-    mods: "969242759397539840",
-    channel: "969225423340839022",
+    category: "966835658666684437",
+    mods: "966057439701110794",
+    channel: "967153671836168232",
     options: [
       {
         label: "Discord Bot",
@@ -43,6 +69,11 @@ const CONFIG = {
         description:
           "Discord Banner (Sunucu, Kullanıcı) hizmeti için bir talep oluşturursunuz.",
         value: "discord-banner",
+      },
+      {
+        label: "MTA Sistemleri",
+        description: "MTA Sistemleri hizmeti için bir talep oluşturursunuz.",
+        value: "mta-sistemleri",
       },
     ],
   },

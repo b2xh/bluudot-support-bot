@@ -1,4 +1,12 @@
-import { Client, MessageEmbed, TextChannel } from "discord.js";
+import {
+  Client,
+  CommandInteraction,
+  Guild,
+  GuildMember,
+  MessageEmbed,
+  TextChannel,
+  User,
+} from "discord.js";
 import { createLogger } from "bunyan";
 import { SupportController } from "./support";
 import { CONFIG } from "./utils/config";
@@ -34,7 +42,6 @@ class Main extends Client {
       var channel = this.channels.cache.get(i.channel.id) as TextChannel;
       var type = channel.name.split("-")[0];
       var role = type === "shop" ? CONFIG.shop.mods : CONFIG.support.mods;
-      console.log(type);
 
       if (i.isButton()) {
         if (i.customId === "arsiv") {
@@ -81,24 +88,72 @@ class Main extends Client {
   public async init() {
     await this.login(CONFIG.token);
     await this.on("modalSubmit", this.supportController.handleModal);
-    await this.on("ready", () => {
+    await this.on("ready", async () => {
       this.logger.info("BLUUDOT.gg support system is ready! (coded by br1s)");
-      this.application.commands
-        .create({
+      var commands = [
+        {
           name: "sub",
           description: "Abone rolü almanızı sağlayan komutur.",
           options: [
             {
               name: "user",
               type: 6,
-              description: "Kullanıcı secersiniz",
+              description: "Kullanıcı değeri",
               required: true,
             },
           ],
-        })
-        .then(() => {
-          this.logger.info("SUB command created.");
-        });
+        },
+        {
+          name: "role",
+          description:
+            "Bir kullanıcıya rol ekleyip kaldırmanızı sağlayan komutdur.",
+          options: [
+            {
+              name: "add",
+              type: 1,
+              description: "Bir kullanıcıya belirtilen rolü eklersiniz.",
+              options: [
+                {
+                  name: "user",
+                  type: 6,
+                  description: "Kullanıcı değeri",
+                  required: true,
+                },
+                {
+                  name: "role",
+                  type: 3,
+                  description: "Rol değeri",
+                  required: true,
+                  choices: CONFIG.commands.choices,
+                },
+              ],
+            },
+            {
+              name: "remove",
+              type: 1,
+              description: "Bir kullanıcıya belirtilen rolü kaldırırsınız.",
+              options: [
+                {
+                  name: "user",
+                  type: 6,
+                  description: "Kullanıcı değeri",
+                  required: true,
+                },
+                {
+                  name: "role",
+                  type: 3,
+                  description: "Rol değeri",
+                  required: true,
+                  choices: CONFIG.commands.choices,
+                },
+              ],
+            },
+          ],
+        },
+      ];
+      await this.application.commands.set(commands).then((cmd) => {
+        this.logger.info(cmd.size + " size command created.");
+      });
     });
     await this.on(
       "interactionCreate",
@@ -106,39 +161,87 @@ class Main extends Client {
     );
     await this.shop.handleShopMenu();
     await this.handleButtons();
-    await this.on("interactionCreate", async (i) => {
-      if (i.isCommand()) {
-        if (i.commandName === "sub") {
-          var user = i.options.get("user").user.id;
-          var member = i.guild.members.cache.get(user);
-          var IMember = i.guild.members.cache.get(i.user.id);
+    await this.on("interactionCreate", this.commandsCallback);
+    // await this.supportController.sendSupportEmbed();
+    await this.shop.createShopMessage();
+  }
 
-          if (!IMember.roles.cache.has(CONFIG.subController[0])) {
-            await i.reply({
-              content: "Bu komutu kullanmak için yeterli yetkin bulunmuyor.",
-              ephemeral: true,
-            });
-            return;
-          }
+  public async commandsCallback(i: CommandInteraction) {
+    if (i.isCommand()) {
+      if (i.commandName === "sub") {
+        var user = i.options.get("user").user.id;
+        var member = i.guild.members.cache.get(user);
+        var IMember = i.guild.members.cache.get(i.user.id);
 
-          if (member.roles.cache.has(CONFIG.subRole)) {
-            await i.reply({
-              content: "Zaten abone rolüne sahipsin.",
-              ephemeral: true,
-            });
-            return;
-          }
-
-          await member.roles.add(CONFIG.subRole);
+        if (!IMember.roles.cache.has(CONFIG.subController)) {
           await i.reply({
-            content: `:tada: <@${user}> kullanıcısına <@${i.user.id}> tarafından abone rolü başarıyla verildi.`,
-            ephemeral: false,
+            content: "Bu komutu kullanmak için yeterli yetkin bulunmuyor.",
+            ephemeral: true,
           });
+          return;
+        }
+
+        await member.roles.add(CONFIG.subRole);
+        await i.reply({
+          content: `:tada: <@${user}> kullanıcısına <@${i.user.id}> tarafından abone rolü başarıyla verildi.`,
+          ephemeral: false,
+        });
+      } else if (i.commandName === "role") {
+        var user = i.options.get("user").user.id;
+        var member: GuildMember = i.guild.members.cache.get(user);
+
+        var role = i.options.get("role").value;
+        var roleID = CONFIG.commands.roles[role.toString()];
+        var interactionMember: GuildMember = i.guild.members.cache.get(
+          i.user.id
+        );
+
+        var args: string = i.options.getSubcommand(true);
+
+        if (!interactionMember.roles.cache.has(CONFIG.subController)) {
+          await i.reply({
+            content: "Bu komutu kullanmak için yeterli yetkin bulunmuyor.",
+            ephemeral: true,
+          });
+          return;
+        }
+
+        if (args === "add") {
+          if (member.manageable) {
+            await member.roles.add(roleID);
+            await i.reply({
+              content: `:tada: <@${member.id}> kullanıcısına <@${i.user.id}> tarafından **${role}** rolü başarıyla verildi.`,
+              ephemeral: false,
+            });
+          } else {
+            await i.reply({
+              content: `**${member.user.username}** kullanıcısını yönetemiyorum. Yeterli yetkim bulunmuyor.`,
+              ephemeral: true,
+            });
+          }
+        } else if (args === "remove") {
+          if (member.manageable) {
+            if (member.roles.cache.has(roleID)) {
+              await member.roles.remove(roleID);
+              await i.reply({
+                content: `:cowboy: <@${member.id}> kullanıcısına <@${i.user.id}> tarafından **${role}** rolü kaldırırıldı.`,
+                ephemeral: false,
+              });
+            } else {
+              await i.reply({
+                content: `**${member.user.username}** kullanıcısında zaten **${role}** rolü bulunmuyor.`,
+                ephemeral: true,
+              });
+            }
+          } else {
+            await i.reply({
+              content: `**${member.user.username}** kullanıcısını yönetemiyorum. Yeterli yetkim bulunmuyor.`,
+              ephemeral: true,
+            });
+          }
         }
       }
-    });
-    await this.shop.createShopMessage();
-    await this.supportController.sendSupportEmbed();
+    }
   }
 }
 

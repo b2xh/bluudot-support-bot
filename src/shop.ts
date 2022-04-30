@@ -17,9 +17,6 @@ class Shop {
   }
 
   public async createShopMessage() {
-    var channel = this.client.channels.cache.get(
-      CONFIG.shop.channel
-    ) as TextChannel;
     this.client.on("messageCreate", async (message: Message) => {
       if (message.content === "!sendShopMessage") {
         var embed = new MessageEmbed()
@@ -36,14 +33,14 @@ class Shop {
             {
               name: "Nasıl satın alırım.",
               value:
-                "Aşağıda bulunan menüden istediginiz hizmeti seçtikten sonra karşınıza çıkan form'da bulunan bazı soruları cevaplayarak **Satış yetkililerimiz** ile özel bir şekilde görüşebilirsiniz.",
+                "Aşağıda bulunan menüden istediginiz hizmeti seçtikten sonra sizin içi oluşturulan kanal da **Satış yetkililerimiz** ile özel bir şekilde görüşebilirsiniz.",
             },
           ])
           .setTimestamp()
           .setFooter({
             text: `${message.guild.name} Shop 🛒 |`,
           });
-        await channel.send({
+        await message.channel.send({
           embeds: [embed],
           components: [createShopMenu()],
         });
