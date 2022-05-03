@@ -158,7 +158,7 @@ class Main extends Client {
     // await this.shop.handleShopMenu();
     await this.handleButtons();
     await this.on("interactionCreate", this.commandsCallback);
-    await this.supportController.sendSupportEmbed();
+    // await this.supportController.sendSupportEmbed();
     // await this.shop.createShopMessage();
   }
 

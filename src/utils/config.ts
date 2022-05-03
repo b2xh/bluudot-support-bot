@@ -6,7 +6,7 @@ config();
 const CONFIG = {
   token: process.env.TOKEN,
   memberID: "966059487238705175",
-  guildId: "816258687932694558",
+  guildId: "966045096074154004",
   // subRole: "967120105655894097",
   // subController: "966057444289687672",
   commands: {
@@ -36,11 +36,10 @@ const CONFIG = {
     ],
   },
   support: {
-    logChannel: "881905118293934100",
-    channel: "971147246143950868",
-    category: "971147225638010940",
-    mods: "877509619520520192",
-    arsiv: "971147315870068747",
+    channel: "967117614033825842",
+    category: "966835658666684437",
+    mods: "966057458529341440",
+    arsiv: "967117790211346502",
   },
   // shop: {
   //   category: "966835658666684437",
