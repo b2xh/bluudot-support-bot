@@ -6,8 +6,9 @@ config();
 const CONFIG = {
   token: process.env.TOKEN,
   memberID: "966059487238705175",
-  subRole: "967120105655894097",
-  subController: "966057444289687672",
+  guildId: "816258687932694558",
+  // subRole: "967120105655894097",
+  // subController: "966057444289687672",
   commands: {
     roles: {
       developer: "969589188532006912",
@@ -35,49 +36,50 @@ const CONFIG = {
     ],
   },
   support: {
-    channel: "967117614033825842",
-    category: "966835658666684437",
-    mods: "966057458529341440",
-    arsiv: "967117790211346502",
+    logChannel: "881905118293934100",
+    channel: "971147246143950868",
+    category: "971147225638010940",
+    mods: "877509619520520192",
+    arsiv: "971147315870068747",
   },
-  shop: {
-    category: "966835658666684437",
-    mods: "966057439701110794",
-    channel: "967153671836168232",
-    options: [
-      {
-        label: "Discord Bot",
-        description: "Discord bot hizmeti için bir talep oluşturursunuz.",
-        value: "discord-bot",
-      },
-      {
-        label: "WhatsApp Bot",
-        description: "WhatsApp Bot hizmeti için bir talep oluşturursunuz.",
-        value: "whatsapp-bot",
-      },
-      {
-        label: "API Wrapper",
-        description: "API Wrapper hizmeti için bir talep oluşturursunuz.",
-        value: "api",
-      },
-      {
-        label: "Website",
-        description: "Website hizmeti için bir talep oluşturursunuz.",
-        value: "website",
-      },
-      {
-        label: "Discord Banner",
-        description:
-          "Discord Banner (Sunucu, Kullanıcı) hizmeti için bir talep oluşturursunuz.",
-        value: "discord-banner",
-      },
-      {
-        label: "MTA Sistemleri",
-        description: "MTA Sistemleri hizmeti için bir talep oluşturursunuz.",
-        value: "mta-sistemleri",
-      },
-    ],
-  },
+  // shop: {
+  //   category: "966835658666684437",
+  //   mods: "966057439701110794",
+  //   channel: "967153671836168232",
+  //   options: [
+  //     {
+  //       label: "Discord Bot",
+  //       description: "Discord bot hizmeti için bir talep oluşturursunuz.",
+  //       value: "discord-bot",
+  //     },
+  //     {
+  //       label: "WhatsApp Bot",
+  //       description: "WhatsApp Bot hizmeti için bir talep oluşturursunuz.",
+  //       value: "whatsapp-bot",
+  //     },
+  //     {
+  //       label: "API Wrapper",
+  //       description: "API Wrapper hizmeti için bir talep oluşturursunuz.",
+  //       value: "api",
+  //     },
+  //     {
+  //       label: "Website",
+  //       description: "Website hizmeti için bir talep oluşturursunuz.",
+  //       value: "website",
+  //     },
+  //     {
+  //       label: "Discord Banner",
+  //       description:
+  //         "Discord Banner (Sunucu, Kullanıcı) hizmeti için bir talep oluşturursunuz.",
+  //       value: "discord-banner",
+  //     },
+  //     {
+  //       label: "MTA Sistemleri",
+  //       description: "MTA Sistemleri hizmeti için bir talep oluşturursunuz.",
+  //       value: "mta-sistemleri",
+  //     },
+  //   ],
+  // },
   game: {
     name: "bluudot server",
     type: "WATCHING" as ExcludeEnum<typeof ActivityTypes, "CUSTOM">,

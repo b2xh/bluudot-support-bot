@@ -41,6 +41,7 @@ async function archivingTicket(interaction, { user, guild, role }) {
 
   const embed: MessageEmbed = new MessageEmbed()
     .setColor("#5865F2")
+    .setTitle(guild.name)
     .setDescription(`Hey! Bu talep <@${user.id}> tarafından arşivlendi!`)
     .addField(
       "*NOT*",
@@ -48,7 +49,7 @@ async function archivingTicket(interaction, { user, guild, role }) {
     )
     .setTimestamp()
     .setFooter({
-      text: `${guild.name} |`,
+      text: `${guild.name}`,
     });
 
   (await message).edit({

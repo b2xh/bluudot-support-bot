@@ -6,6 +6,7 @@
   "author": "br1s",
   "license": "MIT",
   "scripts": {
+    "start:ts": "ts-node src/main.ts | bunyan",
     "dev": "nodemon src/main.ts | bunyan",
     "start": "yarn build && node . | bunyan",
     "build": "tsc"

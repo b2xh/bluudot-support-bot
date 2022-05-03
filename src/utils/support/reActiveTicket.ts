@@ -9,7 +9,7 @@ async function reActiveTicket(interaction, { type, user, guild, role }) {
 
   var memberID = ticketChannel.name.split("-")[1];
   await ticketChannel.edit({
-    name: `active-${memberID}`,
+    name: `ticket-${memberID}`,
     parent: CONFIG.support.category,
     permissionOverwrites: [
       {
@@ -41,6 +41,7 @@ async function reActiveTicket(interaction, { type, user, guild, role }) {
 
   const embed: MessageEmbed = new MessageEmbed()
     .setColor("#5865F2")
+    .setTitle(guild.name)
     .setDescription(
       `Merhaba, <@${user.id}> bu talep tekrardan aktif edildi. Yetkili ekibimiz birazdan senin ile ilgilenecek.`
     )
@@ -50,7 +51,7 @@ async function reActiveTicket(interaction, { type, user, guild, role }) {
     )
     .setTimestamp()
     .setFooter({
-      text: `${guild.name} |`,
+      text: `${guild.name}`,
     });
 
   (await message).edit({

@@ -15,6 +15,7 @@ import { createSupportChannel } from "./utils/support/createSupportChannel";
 import { createSupportModal } from "./utils/support/createSupportModal";
 import { CONFIG } from "./utils/config";
 import { createActiveButton } from "./utils/createButtons";
+import { createChannel } from "./utils/createChannel";
 
 type TSupportSystem = {
   client: Main;
@@ -30,6 +31,7 @@ class SupportController {
 
   public async supportEmbed() {
     var channel = this.client.channels.cache.get(CONFIG.support.channel);
+    var guild = this.client.guilds.cache.get(CONFIG.guildId);
 
     var embed: MessageEmbed = new MessageEmbed()
       .setTitle("Yeni bir yardım talebi oluştur")
@@ -49,12 +51,14 @@ class SupportController {
         },
       ])
       .setTimestamp()
-      .setFooter({ text: "Bluudot.gg support system (br1s)" });
+      .setFooter({
+        text: `${guild.name}`,
+      });
     const row: MessageActionRow = new MessageActionRow().addComponents(
       new MessageButton()
         .setCustomId("talep_olustur")
-        .setLabel("Talep oluştur!")
-        .setStyle("PRIMARY")
+        .setLabel("Yeni bir yardım talebi oluştur!")
+        .setStyle("SUCCESS")
     );
 
     if (channel.isText()) {
@@ -130,7 +134,12 @@ class SupportController {
 
   public async handleModal(modal: ModalSubmitInteraction) {
     if (modal.customId === "support-modal") {
-      var createdChannel = (await createSupportChannel(modal)) as TextChannel;
+      var createdChannel = (await createChannel({
+        guild: modal.guild,
+        user: modal.user,
+        categoryId: CONFIG.support.category,
+        roleId: CONFIG.support.mods,
+      })) as TextChannel;
       var ticketReason = modal.getTextInputValue("support-modal-reason");
 
       var embed = new MessageEmbed()
@@ -151,7 +160,7 @@ class SupportController {
         ])
         .setTimestamp()
         .setFooter({
-          text: `${modal.guild.name} |`,
+          text: `${modal.guild.name}`,
         });
 
       await createdChannel.send({
@@ -173,7 +182,7 @@ class SupportController {
   sendSupportEmbed() {
     this.client.on("messageCreate", (message: Message) => {
       if (message.content === "!sendSupportEmbed") {
-        // this.supportEmbed();
+        this.supportEmbed();
       }
       return;
     });

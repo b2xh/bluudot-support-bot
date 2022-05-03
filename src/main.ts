@@ -7,7 +7,7 @@ import {
 import { createLogger } from "bunyan";
 import { SupportController } from "./support";
 import { CONFIG } from "./utils/config";
-import { Shop } from "./shop";
+// import { Shop } from "./shop";
 import { archivingTicket } from "./utils/support/archivingTicket";
 import { reActiveTicket } from "./utils/support/reActiveTicket";
 import modals from "discord-modals";
@@ -15,7 +15,7 @@ import modals from "discord-modals";
 class Main extends Client {
   public logger = createLogger({ name: "MAIN-LOGS" });
   public supportController: SupportController;
-  public shop: Shop;
+  // public shop: Shop;
 
   public constructor() {
     super({
@@ -30,7 +30,7 @@ class Main extends Client {
       },
     });
     this.supportController = new SupportController({ client: this });
-    this.shop = new Shop(this);
+    // this.shop = new Shop(this);
     modals(this);
   }
 
@@ -38,21 +38,21 @@ class Main extends Client {
     this.on("interactionCreate", async (i) => {
       var channel = this.channels.cache.get(i.channel.id) as TextChannel;
       var type = channel.name.split("-")[0];
-      var role = type === "shop" ? CONFIG.shop.mods : CONFIG.support.mods;
+      // var role = type === "shop" ? CONFIG.shop.mods : CONFIG.support.mods;
 
       if (i.isButton()) {
         if (i.customId === "arsiv") {
           await archivingTicket(i, {
             user: i.user,
             guild: i.guild,
-            role,
+            role: CONFIG.support.mods,
           });
         } else if (i.customId === "aktifet") {
           await reActiveTicket(i, {
             user: i.user,
             guild: i.guild,
             type: type,
-            role: role,
+            role: CONFIG.support.mods,
           });
         } else if (i.customId === "kapat") {
           if (!i.memberPermissions.has("KICK_MEMBERS")) {
@@ -66,16 +66,15 @@ class Main extends Client {
           i.reply({
             content: `Bu talep **5** saniye icerisinde kalıcı olarak kaldırılacak.`,
           });
+
+          var ticketChannel = i.guild.channels.cache.get(i.channel.id);
           setTimeout(async () => {
-            await i.channel.delete();
+            await ticketChannel.delete();
             return;
           }, 5000);
 
           this.logger.info(
-            `${type.replace(
-              type.charAt(0),
-              type.charAt(0).toUpperCase()
-            )} ticket removed; ${i.user.tag} - (${i.user.id}) [${i.channel.id}]`
+            `Ticket removed; ${i.user.tag} - (${i.user.id}) [${i.channel.id}]`
           );
         }
       }
@@ -88,18 +87,18 @@ class Main extends Client {
     await this.on("ready", async () => {
       this.logger.info("BLUUDOT.gg support system is ready! (coded by br1s)");
       var commands = [
-        {
-          name: "sub",
-          description: "Abone rolü almanızı sağlayan komutur.",
-          options: [
-            {
-              name: "user",
-              type: 6,
-              description: "Kullanıcı değeri",
-              required: true,
-            },
-          ],
-        },
+        // {
+        //   name: "sub",
+        //   description: "Abone rolü almanızı sağlayan komutur.",
+        //   options: [
+        //     {
+        //       name: "user",
+        //       type: 6,
+        //       description: "Kullanıcı değeri",
+        //       required: true,
+        //     },
+        //   ],
+        // },
         {
           name: "role",
           description:
@@ -156,34 +155,35 @@ class Main extends Client {
       "interactionCreate",
       this.supportController.handleButtonComponents
     );
-    await this.shop.handleShopMenu();
+    // await this.shop.handleShopMenu();
     await this.handleButtons();
     await this.on("interactionCreate", this.commandsCallback);
-    // await this.supportController.sendSupportEmbed();
-    await this.shop.createShopMessage();
+    await this.supportController.sendSupportEmbed();
+    // await this.shop.createShopMessage();
   }
 
   public async commandsCallback(i: CommandInteraction) {
     if (i.isCommand()) {
-      if (i.commandName === "sub") {
-        var user = i.options.get("user").user.id;
-        var member = i.guild.members.cache.get(user);
-        var IMember = i.guild.members.cache.get(i.user.id);
+      // if (i.commandName === "sub") {
+      //   var user = i.options.get("user").user.id;
+      //   var member = i.guild.members.cache.get(user);
+      //   var IMember = i.guild.members.cache.get(i.user.id);
 
-        if (!IMember.roles.cache.has(CONFIG.subController)) {
-          await i.reply({
-            content: "Bu komutu kullanmak için yeterli yetkin bulunmuyor.",
-            ephemeral: true,
-          });
-          return;
-        }
+      //   if (!IMember.roles.cache.has(CONFIG.subController)) {
+      //     await i.reply({
+      //       content: "Bu komutu kullanmak için yeterli yetkin bulunmuyor.",
+      //       ephemeral: true,
+      //     });
+      //     return;
+      //   }
 
-        await member.roles.add(CONFIG.subRole);
-        await i.reply({
-          content: `:tada: <@${user}> kullanıcısına <@${i.user.id}> tarafından abone rolü başarıyla verildi.`,
-          ephemeral: false,
-        });
-      } else if (i.commandName === "role") {
+      //   await member.roles.add(CONFIG.subRole);
+      //   await i.reply({
+      //     content: `:tada: <@${user}> kullanıcısına <@${i.user.id}> tarafından abone rolü başarıyla verildi.`,
+      //     ephemeral: false,
+      //   });
+      // } else
+      if (i.commandName === "role") {
         var user = i.options.get("user").user.id;
         var member: GuildMember = i.guild.members.cache.get(user);
 
@@ -195,7 +195,7 @@ class Main extends Client {
 
         var args: string = i.options.getSubcommand(true);
 
-        if (!interactionMember.roles.cache.has(CONFIG.subController)) {
+        if (!interactionMember.roles.cache.has(CONFIG.support.mods)) {
           await i.reply({
             content: "Bu komutu kullanmak için yeterli yetkin bulunmuyor.",
             ephemeral: true,
