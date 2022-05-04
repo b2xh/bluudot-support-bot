@@ -20,30 +20,6 @@ class Starboard {
       }
     }
   }
-
-  //   public async controlReactions(
-  //     reaction: MessageReaction,
-  //     user: User | PartialUser
-  //   ) {
-  //     var { message } = reaction;
-  //     var reactionName = "👍";
-
-  //     if (reaction.emoji.name !== reactionName) return;
-  //     if (message.author.bot) return;
-
-  //     // var bestDesignChannelId = CONFIG.ID.channels.bestDesignChannelId;
-  //     // var bestDesignChannel = (await message.guild.channels.cache.get(
-  //     //   bestDesignChannelId
-  //     // )) as TextChannel;
-
-  //     // var fetchedMessage = await bestDesignChannel.messages.fetch({ limit: 100 });
-
-  //     // var embeds = fetchedMessage.filter((x) =>
-  //     //   x.embeds[0].footer.text.startsWith(reactionName)
-  //     // );
-
-  //     // console.log(embeds);
-  //   }
 }
 
 export { Starboard };
