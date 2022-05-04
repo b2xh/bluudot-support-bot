@@ -7,7 +7,7 @@ interface ICreateChannelOptions {
   roleId: string;
 }
 
-async function createChannel({
+async function createTicketChannel({
   guild,
   user,
   categoryId,
@@ -38,4 +38,4 @@ async function createChannel({
   return createdChannel;
 }
 
-export { createChannel };
+export { createTicketChannel };

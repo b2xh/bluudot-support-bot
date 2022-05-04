@@ -1,16 +1,16 @@
 import { TextChannel, Permissions, MessageEmbed } from "discord.js";
 import { CONFIG } from "../config";
-import { createActiveButton } from "../createButtons";
+import { createAgainActiveButton } from "../../components/buttons/createAgainActiveButton";
 
-async function reActiveTicket(interaction, { type, user, guild, role }) {
+async function archivingTicket(interaction, { user, guild, role }) {
   var ticketChannel = interaction.client.channels.cache.get(
     interaction.channel.id
   ) as TextChannel;
 
   var memberID = ticketChannel.name.split("-")[1];
   await ticketChannel.edit({
-    name: `ticket-${memberID}`,
-    parent: CONFIG.support.category,
+    name: `arsiv-${memberID}`,
+    parent: CONFIG.ID.channels.archiveCategoryId,
     permissionOverwrites: [
       {
         id: interaction.guild.roles.everyone.id,
@@ -18,18 +18,18 @@ async function reActiveTicket(interaction, { type, user, guild, role }) {
       },
       {
         id: role,
-        allow: [Permissions.FLAGS.SEND_MESSAGES],
+        deny: [Permissions.FLAGS.SEND_MESSAGES],
       },
       {
         id: memberID,
-        allow: [Permissions.FLAGS.VIEW_CHANNEL],
+        deny: [Permissions.FLAGS.VIEW_CHANNEL],
       },
     ],
   });
 
   await interaction.deferReply({ ephemeral: true });
   interaction.followUp({
-    content: `Yardım talebi tekrardan atkif edildi!`,
+    content: `Bu talep başarıyla arşivlendi!`,
     ephemeral: true,
   });
 
@@ -42,12 +42,10 @@ async function reActiveTicket(interaction, { type, user, guild, role }) {
   const embed: MessageEmbed = new MessageEmbed()
     .setColor("#5865F2")
     .setTitle(guild.name)
-    .setDescription(
-      `Merhaba, <@${user.id}> bu talep tekrardan aktif edildi. Yetkili ekibimiz birazdan senin ile ilgilenecek.`
-    )
+    .setDescription(`Hey! Bu talep <@${user.id}> tarafından arşivlendi!`)
     .addField(
       "*NOT*",
-      "Talebi tekrardan arşivlemek için aşağıdaki **yeşil** düğmeyi kullanabilirsiniz eğer bu kanalı kalıcı olarak kapatmak istiyorsanız **kırmızı** düğmeyi kullanabilirsiniz"
+      "Talebi tekrar aktif etmek için aşağıdaki **yeşil** düğmeyi kullanabilirsiniz eğer bu kanalı kalıcı olarak kapatmak istiyorsanız **kırmızı** düğmeyi kullanabilirsiniz"
     )
     .setTimestamp()
     .setFooter({
@@ -56,8 +54,8 @@ async function reActiveTicket(interaction, { type, user, guild, role }) {
 
   (await message).edit({
     embeds: [embed],
-    components: [createActiveButton()],
+    components: [createAgainActiveButton()],
   });
 }
 
-export { reActiveTicket };
+export { archivingTicket };
