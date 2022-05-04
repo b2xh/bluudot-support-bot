@@ -33,7 +33,7 @@ const CONFIG = {
     },
     channels: {
       rulesChannelId: "966058095442800702",
-      sharesChannelIds: ["971456668720316436"],
+      sharesChannelIds: ["971079816306630656", "971079834467983430"],
       bestDesignChannelId: "",
       ticketChannelId: "967117614033825842",
       ticketCategoryId: "966835658666684437",

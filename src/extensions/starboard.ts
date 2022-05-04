@@ -1,10 +1,4 @@
-import {
-  Message,
-  MessageReaction,
-  PartialUser,
-  TextChannel,
-  User,
-} from "discord.js";
+import { Message } from "discord.js";
 import { Core } from "../core";
 import { CONFIG } from "../utils/config";
 
@@ -16,8 +10,8 @@ class Starboard {
   }
 
   public addReactions(event: Message) {
-    var up = "👍";
-    var down = "👎";
+    var up = "971124414269771796";
+    var down = "971124403842723890";
 
     if (CONFIG.ID.channels.sharesChannelIds.includes(event.channelId)) {
       if (event.attachments.size !== 0) {
