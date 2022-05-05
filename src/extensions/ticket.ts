@@ -7,7 +7,6 @@ import { CONFIG } from "../utils/config";
 import { createdTicketEmbed } from "../components/embeds/createdTicketEmbed";
 import { createTicketModal } from "../components/modals/createTicketModal";
 import { createTicketChannel } from "../utils/ticket/createTicketChannel";
-import { createTicketEmbed } from "../components/embeds/createTicketEmbed";
 
 class Ticket {
   public core: Core;
@@ -20,11 +19,15 @@ class Ticket {
     var ticketChannelId = CONFIG.ID.channels.ticketChannelId;
     var ticketChannel = await this.core.channels.cache.get(ticketChannelId);
 
-    var { embed } = createTicketEmbed();
+    var content = CONFIG.MESSAGES.filter(
+      (x) => x.name === "ticket-messages"
+    )[0];
+
+    var messages = content.messages.map((x) => x).join("\n\n");
 
     if (ticketChannel.isText()) {
       await ticketChannel.send({
-        embeds: [embed],
+        content: messages,
         components: [createTicketButton()],
       });
     }

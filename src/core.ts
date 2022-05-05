@@ -40,7 +40,7 @@ class Core extends Client {
     await this.on("interactionCreate", this.ticket.handleTicketButton);
     await this.on("interactionCreate", this.shop.handleSelectMenu);
     await this.on("modalSubmit", this.ticket.handleTicketModal);
-    // await this.on("messageCreate", this.messageCommands);
+    await this.on("messageCreate", this.messageCommands);
     await this.on("interactionCreate", this.handleButtons);
     await this.on("ready", this.onReady);
     await this.on("messageCreate", this.starboard.addReactions);
@@ -136,7 +136,7 @@ class Core extends Client {
   }
 
   public async messageCommands(event: Message) {
-    if (event.member.id !== CONFIG.ID.developerId) return;
+    if (event.author.id !== CONFIG.ID.developerId) return;
     if (!event.content.startsWith("!send")) return;
 
     var args = event.content.split(" ").slice(1);
@@ -221,7 +221,7 @@ class Core extends Client {
         var member: GuildMember = i.guild.members.cache.get(user);
 
         var role = i.options.get("role").value;
-        var roleID = CONFIG.ID.roles[role.toString()];
+        var roleID = CONFIG.ID.roles[`${role.toString()}RoleId`];
         var Imember: GuildMember = i.guild.members.cache.get(i.user.id);
 
         var args: string = i.options.getSubcommand(true);

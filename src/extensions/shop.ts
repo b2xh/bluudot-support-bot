@@ -6,7 +6,6 @@ import {
   TextChannel,
 } from "discord.js";
 import { createActiveButton } from "../components/buttons/createActiveButton";
-import { createShopEmbed } from "../components/embeds/createShopEmbed";
 import { createShopMenu } from "../components/menu/createShopMenu";
 import { Core } from "../core";
 import { CONFIG } from "../utils/config";
@@ -21,11 +20,16 @@ class Shop {
   public async sendShopMessage() {
     var shopChannelId: string = CONFIG.ID.channels.shopChannelId;
     var shopChannel = await this.core.channels.cache.get(shopChannelId);
-    var { embed } = await createShopEmbed();
 
     if (shopChannel.isText()) {
+      var content = CONFIG.MESSAGES.filter(
+        (x) => x.name === "shop-messages"
+      )[0];
+
+      var messages = content.messages.map((x) => x).join("\n\n");
+
       await shopChannel.send({
-        embeds: [embed],
+        content: messages,
         components: [createShopMenu()],
       });
     }

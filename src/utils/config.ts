@@ -97,6 +97,25 @@ const CONFIG = {
       value: "customer",
     },
   ],
+  MESSAGES: [
+    {
+      name: "shop-messages",
+      messages: [
+        "**Bluudot Shop 🛒**",
+        "Merhaba, aşağıda bulunan menüde sizin için ekibimiz tarafından yapabileceğimiz hizmetler bulunuyor. Hizmetlerimiz bunlar ile sınırlı olmayacak ve zamanla çoğalacaktır.",
+        "**Nasıl satın alırım?**\nAşağıda bulunan menüden istediginiz hizmeti seçtikten sonra sizin içi oluşturulan kanalda satış yetkililerimiz ile özel bir şekilde görüşebilirsiniz.",
+      ],
+    },
+    {
+      name: "ticket-messages",
+      messages: [
+        "**Yeni bir yardım talebi oluştur!** :ticket:",
+        "Bir yardım talebi oluşturmak için aşağıdaki düğmeyi kullabilirsiniz. Alt kısımda daha açıklayıcı bir metin bulunuyor. Okumayı unutma!",
+        "**Nasıl yardım talebi oluştururum?**\nAşağıdaki **Talep Oluştur** düğmesine basıp karşına çıkan formda bulunan soruları doldurduktan sonra talep oluşturma süreciniz başarıyla tamamlanmış oluyor. Sizin adınıza oluşturulan kanaldan yardım alabilirsiniz. ",
+        "**NOT!**\nGereksiz talep oluşturan kullanıcılarda moderatörlerin ceza uygulama yetkisi bulunmaktadır!",
+      ],
+    },
+  ],
 };
 
 export { CONFIG };
