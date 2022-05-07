@@ -5,6 +5,7 @@ config();
 
 const CONFIG = {
   CORE: {
+    prefix: `dot`,
     intents: [
       "GUILDS",
       "GUILD_MESSAGES",
@@ -23,6 +24,7 @@ const CONFIG = {
     developerId: "681547077662277719",
     guildId: "966045096074154004",
     roles: {
+      adminRoleId: "971431075932954644",
       helperRoleId: "966057458529341440",
       moderatorRoleId: "966057444289687672",
       guildMemberRoleId: "966059487238705175",
@@ -44,39 +46,24 @@ const CONFIG = {
   },
   OPTIONS: [
     {
-      label: "Discord Supervisor Bot (170₺)",
-      description:
-        "Discord Supervisor bot hizmeti için bir talep oluşturursunuz.",
-      value: "discord-supervisor-bot",
+      label: "Tasarım Hizmetleri",
+      description: "Tasarım hizmeti için bir talep oluşturursunuz.",
+      value: "tasarim-hizmetleri",
     },
     {
-      label: "Level 1 Discord Afiş (30₺)",
-      description:
-        "Level 1 Discord Afiş hizmeti için bir talep oluşturursunuz.",
-      value: "level-1-discord-afiş",
+      label: "Yazılım Hizmetleri",
+      description: "Yazılım hizmeti için bir talep oluşturursunuz.",
+      value: "yazilim-hizmetleri",
     },
     {
-      label: "Level 2 Discord Afiş (60₺)",
-      description:
-        "Level 2 Discord Afiş hizmeti için bir talep oluşturursunuz.",
-      value: "level-2-discord-afiş",
+      label: "Sosyal Medya Hizmetleri",
+      description: "Sosyal Medya hizmeti için bir talep oluşturursunuz.",
+      value: "sosyal-medya-hizmetleri",
     },
     {
-      label: "Level 3 Discord Afiş (90₺)",
-      description:
-        "Level 3 Discord Afiş hizmeti için bir talep oluşturursunuz.",
-      value: "level-3-discord-afiş",
-    },
-    {
-      label: "Level 4 Discord Afiş (140₺)",
-      description:
-        "Level 3 Discord Afiş hizmeti için bir talep oluşturursunuz.",
-      value: "level-4-discord-afiş",
-    },
-    {
-      label: "Oyun Sistemleri",
-      description: "Oyun Sistemleri hizmeti için bir talep oluşturursunuz.",
-      value: "oyun-sistemleri",
+      label: "Edit Hizmetleri",
+      description: "Edit hizmeti için bir talep oluşturursunuz.",
+      value: "edit-hizmetleri",
     },
   ],
   CHOICES: [
@@ -113,6 +100,12 @@ const CONFIG = {
         "Bir yardım talebi oluşturmak için aşağıdaki düğmeyi kullabilirsiniz. Alt kısımda daha açıklayıcı bir metin bulunuyor. Okumayı unutma!",
         "**Nasıl yardım talebi oluştururum?**\nAşağıdaki **Talep Oluştur** düğmesine basıp karşına çıkan formda bulunan soruları doldurduktan sonra talep oluşturma süreciniz başarıyla tamamlanmış oluyor. Sizin adınıza oluşturulan kanaldan yardım alabilirsiniz. ",
         "**NOT!**\nGereksiz talep oluşturan kullanıcılarda moderatörlerin ceza uygulama yetkisi bulunmaktadır!",
+      ],
+    },
+    {
+      name: "rules-messages",
+      messages: [
+        `Kayıt sağlamak ve kanalları görüntüleyip sohbet etmeye başlamak için aşağıdaki **"Düğmeye"** basınız.`,
       ],
     },
   ],

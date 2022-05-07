@@ -2,6 +2,7 @@ import {
   ButtonInteraction,
   Client,
   CommandInteraction,
+  Formatters,
   GuildMember,
   Message,
   MessageActionRow,
@@ -10,12 +11,13 @@ import {
 } from "discord.js";
 import { createLogger } from "bunyan";
 import { CONFIG } from "./utils/config";
-import modals from "discord-modals";
 import { Ticket } from "./extensions/ticket";
 import { reActiveTicket } from "./utils/ticket/reActiveTicket";
 import { archivingTicket } from "./utils/ticket/archivingTicket";
 import { Shop } from "./extensions/shop";
 import { Starboard } from "./extensions/starboard";
+import modals from "discord-modals";
+import ms from "ms";
 
 class Core extends Client {
   public logger = createLogger({ name: "MAIN-LOGS" });
@@ -35,31 +37,82 @@ class Core extends Client {
     this.shop = new Shop({ core: this });
     this.starboard = new Starboard({ core: this });
   }
+
   public async handleEvents() {
-    await this.on("interactionCreate", this.commandsCallback);
+    await this.on("interactionCreate", this.slashCommandsCallback);
     await this.on("interactionCreate", this.ticket.handleTicketButton);
     await this.on("interactionCreate", this.shop.handleSelectMenu);
     await this.on("modalSubmit", this.ticket.handleTicketModal);
-    await this.on("messageCreate", this.messageCommands);
+    await this.on("messageCreate", this.sendCommand);
     await this.on("interactionCreate", this.handleButtons);
     await this.on("ready", this.onReady);
     await this.on("messageCreate", this.starboard.addReactions);
-    // await this.on("messageReactionAdd", this.starboard.controlReactions);
+    await this.on("messageCreate", this.commandsCallback);
+  }
+
+  public async commandsCallback(message: Message) {
+    var prefix = CONFIG.CORE.prefix;
+
+    if (!message.content.startsWith(prefix)) return;
+    if (!message.content.includes(" ")) return;
+
+    var commandName = message.content.slice(prefix.length).trim().split(" ")[0];
+    var args = message.content.slice(prefix.length).trim().split(" ").slice(1);
+
+    if (commandName === "t") {
+      if (!message.member.roles.cache.has(CONFIG.ID.roles.moderatorRoleId)) {
+        return;
+      }
+
+      var user = args[0];
+      var time = args.slice(1).join(" ");
+      var reason = `Moderatör: ${message.author.id}`;
+
+      if (!user) return;
+      var member = message.guild.members.cache.get(user);
+      if (!member) return;
+      if (member.id === message.author.id) return;
+      if (!time) return;
+      if (!member.manageable) return;
+
+      await message.reply({
+        content: `**${member.user.tag}** kullanıcısı <@${message.author.id}> tarafından susturuldu **[Zaman: ${time}]**`,
+      });
+
+      await member.timeout(ms(time));
+    } else if (commandName === "b") {
+      if (!message.member.roles.cache.has(CONFIG.ID.roles.adminRoleId)) {
+        return;
+      }
+
+      var user = args[0];
+      var reason = `Moderatör: ${message.author.id}`;
+
+      if (!user) return;
+      var member = message.guild.members.cache.get(user);
+      if (!member) return;
+      if (member.id === message.author.id) return;
+
+      if (!member.bannable) return;
+
+      await message.reply({
+        content: `**${member.user.tag}** kullanıcısı <@${message.author.id}> tarafından yasaklandı`,
+      });
+
+      await member.ban({
+        reason,
+      });
+    }
   }
 
   public rulesButton() {
-    var rulesMesssage = `Bluudot'a hoş geldiniz!\n\n**Sunucu Kuralları**\n**1.** Discord Topluluk Kuralları'na uyun. (https://discord.com/terms)\n**2.** Cinsel içerikler paylaşmayın veya göndermelerini yapmayın.\n**3.** Ölüm, yaralama ve zarar verici konuları bulundurmayın.\n**4.** Yasa dışı, çalma veya hackleme gibi konuları bulundurmayın.\n**5.** Dil, din, ırk ayrımı yapmayın ve herkese saygıyla yaklaşın.\n**6.** Herhangi birisini ifşalamayın, kötülemeyin veya aşağılamayın.\n**7.** Spam, flood, küfür, gereksiz spoiler veya aşırı caps kullanmayın.\n**8.** Epileptik emojiler veya profil resimlerinin bulunmasını istemiyoruz.\n**9.** Rolleri veya üyeleri gereksiz/spam amaçlı etiketlemeyin.\n**10.** Hiçbir platformun/hesabınızın reklamını yapmayın.\n**11.** Siyaset, tarafçılık veya ayrımcılık yapmak yasaktır.`;
-    var message = `**Davranışlarınızı Değerlendirin**\n**1.** Rahatsız olacağınız davranışları yansıtmayın ve buna dikkat edin.\n**2.** Devamlı olarak yanlış bilgi paylaşıp insanları kandırmayı amaçlamayın.\n**3.** Sürekli birisine veya toplu arkadaşlık isteği yollamayın.\n**4.** Minimod'luk yani yetkili olmadan yetkili gibi uyarı vermek veya karar koymak yasaktır.`;
-    var note1 = `*Yetkililerimiz kural ihlaline bağlı olarak gerekli cezayı uygulayabilir. Burada belirtilmemiş olup sunucu düzenini bozacak davranışlar yasaktır. Buradan itibaren yukarıdaki kuralları kabul etmiş sayılacaksınız.*`;
-    var note2 = `Kayıt sağlamak ve kanalları görüntüleyip sohbet etmeye başlamak için yukardaki **"Düğmeye"** basınız.`;
-
-    var allMessage = `${rulesMesssage}\n\n${message}\n\n\n${note1}\n\n${note2}`;
-
     var channel = this.channels.cache.get(CONFIG.ID.channels.rulesChannelId);
+    var content = CONFIG.MESSAGES.filter((x) => x.name === "rules-messages")[0];
+    var message = content.messages.map((x) => x).join("\n\n");
 
     if (channel.isText()) {
       channel.send({
-        content: allMessage,
+        content: message,
         components: [
           new MessageActionRow().addComponents([
             new MessageButton()
@@ -135,7 +188,7 @@ class Core extends Client {
     }
   }
 
-  public async messageCommands(event: Message) {
+  public async sendCommand(event: Message) {
     if (event.author.id !== CONFIG.ID.developerId) return;
     if (!event.content.startsWith("!send")) return;
 
@@ -214,16 +267,15 @@ class Core extends Client {
     await this.handleEvents();
   }
 
-  public async commandsCallback(i: CommandInteraction) {
+  public async slashCommandsCallback(i: CommandInteraction) {
     if (i.isCommand()) {
       if (i.commandName === "role") {
         var user = i.options.get("user").user.id;
         var member: GuildMember = i.guild.members.cache.get(user);
 
         var role = i.options.get("role").value;
-        var roleID = CONFIG.ID.roles[`${role.toString()}RoleId`];
+        var roleID: string = CONFIG.ID.roles[`${role.toString()}RoleId`];
         var Imember: GuildMember = i.guild.members.cache.get(i.user.id);
-
         var args: string = i.options.getSubcommand(true);
 
         if (!Imember.roles.cache.has(CONFIG.ID.roles.moderatorRoleId)) {
